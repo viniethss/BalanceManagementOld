@@ -1,6 +1,8 @@
 <template>
   <div id="app">
     <img src="./assets/logo.png">
+    <div>dddd</div>
+     <router-link to='/balancemanagement'>Home</router-link>
     <router-view/>
   </div>
 </template>

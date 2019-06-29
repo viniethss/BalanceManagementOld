@@ -1,15 +1,16 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import BalanceManagement from '@/components/BalanceManagement'
 
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
-      path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
+      path: '/balancemanagement',
+      name: 'BalanceManagement',
+      component: BalanceManagement
     }
   ]
 })
