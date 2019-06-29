@@ -1,2 +1,2 @@
 # BalanceManagement
-BalanceManagement tool 
+BalanceManagement tool using Vue and FireStore
