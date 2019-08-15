@@ -1,32 +1,32 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify'
 import Router from 'vue-router'
-import BalanceManagement from '@/components/BalanceManagement'
-import Login from '@/components/Login'
-import HomePage from '@/components/HomePage'
 import 'vuetify/dist/vuetify.min.css'
-
+import firebase from 'firebase'
 
 Vue.use(Router)
 Vue.use(Vuetify)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   routes: [
     {
       path: '/login',
       name: 'Lotus Kpm',
-      component: Login
+      component: lazyLoad('Login')
     },
     {
       path: '/bm',
       name: 'Balance Management',
-      component: BalanceManagement
+      component: lazyLoad('BalanceManagement'),
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/',
       name: 'HomePage',
-      component: HomePage
+      component:lazyLoad('HomePage')
     },
     {
       path: '*',
@@ -34,3 +34,22 @@ export default new Router({
     }
   ]
 })
+
+function lazyLoad(view){
+  return() => import(`@/components/${view}.vue`)
+}
+
+router.beforeEach((to, from, next) => {
+  const currentUser = firebase.auth().currentUser;
+  const isAuthNeeded = to.matched.some(record => record.meta.requiresAuth);
+
+  alert(currentUser);
+  if(isAuthNeeded && !currentUser){
+    next('login');
+  }
+  else{
+    next()
+  }
+});
+
+export default router

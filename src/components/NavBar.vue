@@ -4,18 +4,35 @@
     <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items >
-      <v-btn flat>{{ currentRouteName }}</v-btn>
+      <v-btn flat id="signOutBtn" @click="logOut"> <v-icon >power_settings_new</v-icon>&nbsp;{{ signOut }}</v-btn>
     </v-toolbar-items>
   </v-toolbar>
 </template>
 
 <script>
+import firebase from 'firebase'
+
 export default {
     name: 'NavBar',
     data(){
         return{
-            loginMode: 'Login',
+            signOut: 'Log Out',
         }
-    }
+    },
+     methods: {
+       logOut(){
+          firebase.auth().signOut().then(
+           (user) => {
+            this.$router.replace('login')
+           }
+          )
+       }
+     }
 }
 </script>
+
+<style scoped>
+  #signOutBtn{
+    font-size: 1.3em !important;
+  }
+</style>
