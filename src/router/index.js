@@ -43,9 +43,11 @@ router.beforeEach((to, from, next) => {
   const currentUser = firebase.auth().currentUser;
   const isAuthNeeded = to.matched.some(record => record.meta.requiresAuth);
 
-  alert(currentUser);
   if(isAuthNeeded && !currentUser){
     next('login');
+  }
+  else if(currentUser && to.name == 'Lotus Kpm' ){
+    next('bm');
   }
   else{
     next()
