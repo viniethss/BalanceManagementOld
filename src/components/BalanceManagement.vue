@@ -66,15 +66,15 @@
       :rows-per-page-items="[5,50,40,30,20,10]"
       >
       <template v-slot:items="props">
-        <td >{{ props.item.date }}</td>
-        <td class="text-xs-right ">{{ props.item.name }}</td>
-        <td class="text-xs-right ">{{ props.item.vehicle_no }}</td>
-        <td class="text-xs-right ">{{ props.item.reference }}</td>
-        <td class="text-xs-right ">{{ props.item.amount }}</td>
-        <td class="text-xs-right ">{{ props.item.amount_recieved }}</td>
-        <td class="text-xs-right ">{{ props.item.amount_paid }}</td>
-        <td class="text-xs-right ">{{ props.item.balance }}</td>
-        <td class="text-xs-right ">{{ props.item.advance }}</td>
+        <td class="data-row-size">{{ props.item.date }}</td>
+        <td class="text-xs-right data-row-size">{{ props.item.name }}</td>
+        <td class="text-xs-right data-row-size">{{ props.item.vehicle_no }}</td>
+        <td class="text-xs-right data-row-size">{{ props.item.reference }}</td>
+        <td class="text-xs-right data-row-size">{{ props.item.amount }}</td>
+        <td class="text-xs-right data-row-size">{{ props.item.amount_recieved }}</td>
+        <td class="text-xs-right data-row-size">{{ props.item.amount_paid }}</td>
+        <td class="text-xs-right data-row-size">{{ props.item.balance }}</td>
+        <td class="text-xs-right data-row-size">{{ props.item.advance }}</td>
         <td class="justify-center layout px-0">
           <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
         </td>
@@ -204,5 +204,8 @@ import format from 'date-fns/format'
 <style scoped>
   nav.v-toolbar{
     background-color: #fafafa !important;
+  }
+  .data-row-size{
+    font-size: 1.04em;
   }
 </style>
