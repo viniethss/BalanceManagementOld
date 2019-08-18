@@ -3,81 +3,81 @@
     <NavBar/>
     <br/>
     <v-toolbar flat color="white">
-      <v-toolbar-title >My CRUD</v-toolbar-title>
-      <v-divider
-        class="mx-2"
-        inset
-        vertical
-      ></v-divider>
+      <v-toolbar-title class="bm-title-cont"><div class="bm-title headline">Balance Management</div></v-toolbar-title>
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog" max-width="500px">
         <template v-slot:activator="{ on }">
-          <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+          <v-btn color="primary" dark class="mb-2" v-on="on">NEW  ENTRY</v-btn>
         </template>
         <v-card>
-          <v-card-title>
-            <span class="headline">{{ formTitle }}</span>
+          <v-card-title class="headline primary" >
+            <span style="color: #efefef">{{ formTitle }}</span>
           </v-card-title>
+          <v-divider></v-divider>
+          <v-form ref="entryForm" @submit.prevent="save">
+            <v-card-text>
+              <v-container grid-list-md>
+                <v-layout wrap>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field  v-model="editedItem.date" slot="activator" label="Date" :rules="dateRule" validate-on-blur></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItem.name" v-if="dialog" :autofocus="formTitle ==  'New Entry'"  label="Name" :rules="requiredRule" validate-on-blur></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItem.vehicle_no" label="Vehicle No" ></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItem.reference" label="Reference" ></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItem.amount" label="Amount" :rules="numberRule" validate-on-blur></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItem.amount_recieved" v-if="dialog" :autofocus="formTitle ==  'Edit Entry'" label="Amount recieved"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItem.amount_paid" label="Amount paid"></v-text-field>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card-text>
 
-          <v-card-text>
-            <v-container grid-list-md>
-              <v-layout wrap>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.name" label="Dessert name"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.calories" label="Calories"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.fat" label="Fat (g)"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.carbs" label="Carbs (g)"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.protein" label="Protein (g)"></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-container>
-          </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" flat @click="close">Cancel</v-btn>
+              <v-btn color="blue darken-1" flat type="submit">Save</v-btn>
+            </v-card-actions>
 
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" flat @click="close">Cancel</v-btn>
-            <v-btn color="blue darken-1" flat @click="save">Save</v-btn>
-          </v-card-actions>
+          </v-form>
         </v-card>
       </v-dialog>
     </v-toolbar>
+    
+    <br/>
+    <br/>
+
+    <v-divider></v-divider>
+
     <v-data-table
       :headers="headers"
-      :items="desserts"
-      class="elevation-1"
-    >
+      :items="record"
+      :rows-per-page-items="[5,50,40,30,20,10]"
+      >
       <template v-slot:items="props">
-        <td>{{ props.item.name }}</td>
-        <td class="text-xs-right">{{ props.item.calories }}</td>
-        <td class="text-xs-right">{{ props.item.fat }}</td>
-        <td class="text-xs-right">{{ props.item.carbs }}</td>
-        <td class="text-xs-right">{{ props.item.protein }}</td>
+        <td >{{ props.item.date }}</td>
+        <td class="text-xs-right ">{{ props.item.name }}</td>
+        <td class="text-xs-right ">{{ props.item.vehicle_no }}</td>
+        <td class="text-xs-right ">{{ props.item.reference }}</td>
+        <td class="text-xs-right ">{{ props.item.amount }}</td>
+        <td class="text-xs-right ">{{ props.item.amount_recieved }}</td>
+        <td class="text-xs-right ">{{ props.item.amount_paid }}</td>
+        <td class="text-xs-right ">{{ props.item.balance }}</td>
+        <td class="text-xs-right ">{{ props.item.advance }}</td>
         <td class="justify-center layout px-0">
-          <v-icon
-            small
-            class="mr-2"
-            @click="editItem(props.item)"
-          >
-            edit
-          </v-icon>
-          <v-icon
-            small
-            @click="deleteItem(props.item)"
-          >
-            delete
-          </v-icon>
+          <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
         </td>
-      </template>
-      <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize">Reset</v-btn>
       </template>
     </v-data-table>
   </div>
@@ -85,50 +85,65 @@
 
 <script>
 import NavBar from '@/components/NavBar'
-
+import format from 'date-fns/format'
   export default {
     data: () => ({
       dialog: false,
-      headers: [
-        {
-          text: 'Dessert (100g serving)',
-          align: 'left',
-          sortable: false,
-          value: 'name'
-        },
-        { text: 'Calories', value: 'calories' },
-        { text: 'Fat (g)', value: 'fat' },
-        { text: 'Carbs (g)', value: 'carbs' },
-        { text: 'Protein (g)', value: 'protein' },
-        { text: 'Actions', value: 'name', sortable: false }
+      requiredRule: [
+        v => !!v || 'Field is required',
       ],
-      desserts: [],
+      numberRule: [
+        v => !!v || 'Field is required',
+        v => /^\d+$/.test(v) || 'Must be a number',
+      ],
+      dateRule: [
+        v => !!v || 'Field is required',
+        v => /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/.test(v) || 'Must be a valid date',
+      ],
+      headers: [
+        { text: 'Date', value: 'date', align: 'left', class: ""},
+        { text: 'Name', value: 'name', align: 'right', class: "" },
+        { text: 'Vehicle No', value: 'vehicle_no', align: 'right', class: "" },
+        { text: 'Reference', value: 'reference', align: 'right', class: "" },
+        { text: 'Amount', value: 'amount', align: 'right', class: "" },
+        { text: 'Amount recieved', value: 'amount_recieved', align: 'right', class: "" },
+        { text: 'Amount paid', value: 'amount_paid', align: 'right', class: "" },
+        { text: 'Balance', value: 'balance', align: 'right', class: "" },
+        { text: 'Advance', value: 'advance', align: 'right', class: "" },
+        { text: '', value: 'edit', sortable: false}
+      ],
+      record: [],
       editedIndex: -1,
       editedItem: {
+        date: format(new Date(), 'DD/MM/YYYY'),
         name: '',
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0
+        vehicle_no: '',
+        reference: '',
+        amount: '',
+        amount_recieved: '',
+        amount_paid: '',
       },
       defaultItem: {
+        date: format(new Date(), 'DD/MM/YYYY'),
         name: '',
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0
+        vehicle_no: '',
+        reference: '',
+        amount: '',
+        amount_recieved: '',
+        amount_paid: '',
       }
     }),
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+        return this.editedIndex === -1 ? 'New Entry' : 'Edit Entry'
       }
     },
 
     watch: {
       dialog (val) {
         val || this.close()
+        this.$refs.entryForm.resetValidation()
       }
     },
 
@@ -138,106 +153,44 @@ import NavBar from '@/components/NavBar'
 
     methods: {
       initialize () {
-        this.desserts = [
+        this.record = [
           {
-            name: 'Frozen Yogurt',
-            calories: 159,
-            fat: 6.0,
-            carbs: 24,
-            protein: 4.0
-          },
-          {
-            name: 'Ice cream sandwich',
-            calories: 237,
-            fat: 9.0,
-            carbs: 37,
-            protein: 4.3
-          },
-          {
-            name: 'Eclair',
-            calories: 262,
-            fat: 16.0,
-            carbs: 23,
-            protein: 6.0
-          },
-          {
-            name: 'Cupcake',
-            calories: 305,
-            fat: 3.7,
-            carbs: 67,
-            protein: 4.3
-          },
-          {
-            name: 'Gingerbread',
-            calories: 356,
-            fat: 16.0,
-            carbs: 49,
-            protein: 3.9
-          },
-          {
-            name: 'Jelly bean',
-            calories: 375,
-            fat: 0.0,
-            carbs: 94,
-            protein: 0.0
-          },
-          {
-            name: 'Lollipop',
-            calories: 392,
-            fat: 0.2,
-            carbs: 98,
-            protein: 0
-          },
-          {
-            name: 'Honeycomb',
-            calories: 408,
-            fat: 3.2,
-            carbs: 87,
-            protein: 6.5
-          },
-          {
-            name: 'Donut',
-            calories: 452,
-            fat: 25.0,
-            carbs: 51,
-            protein: 4.9
-          },
-          {
-            name: 'KitKat',
-            calories: 518,
-            fat: 26.0,
-            carbs: 65,
-            protein: 7
+            date: '01/14/2019',
+            name: 'Vinieth',
+            vehicle_no: 'TN35A2040',
+            reference: 'Vinieth kpm',
+            amount: 1000,
+            amount_recieved: 10,
+            amount_paid: 100,
+            balance: 500,
+            advance: 844
           }
         ]
       },
 
-      editItem (item) {
-        this.editedIndex = this.desserts.indexOf(item)
+      editItem (item) { 
+        this.editedIndex = this.record.indexOf(item)
         this.editedItem = Object.assign({}, item)
+        this.editedItem.date = format(new Date(), 'DD/MM/YYYY')
         this.dialog = true
-      },
-
-      deleteItem (item) {
-        const index = this.desserts.indexOf(item)
-        confirm('Are you sure you want to delete this item?') && this.desserts.splice(index, 1)
       },
 
       close () {
         this.dialog = false
-        setTimeout(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        }, 300)
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
       },
 
       save () {
-        if (this.editedIndex > -1) {
-          Object.assign(this.desserts[this.editedIndex], this.editedItem)
-        } else {
-          this.desserts.push(this.editedItem)
-        }
-        this.close()
+        if (this.$refs.entryForm.validate()){
+          if(this.editedIndex > -1) {
+            Object.assign(this.record[this.editedIndex], this.editedItem)
+          } 
+          else {
+            this.record.push(this.editedItem)
+          }
+          this.close()
+        } 
       }
     },
     components: {
@@ -249,5 +202,7 @@ import NavBar from '@/components/NavBar'
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+  nav.v-toolbar{
+    background-color: #fafafa !important;
+  }
 </style>

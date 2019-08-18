@@ -1,7 +1,7 @@
 <template>
   <v-toolbar>
     <v-toolbar-side-icon></v-toolbar-side-icon>
-    <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
+    <v-toolbar-title>LOTUS KPM</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items >
       <v-btn flat id="signOutBtn" @click="logOut"> <v-icon >power_settings_new</v-icon>&nbsp;{{ signOut }}</v-btn>

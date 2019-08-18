@@ -12,7 +12,10 @@
 
 
 <style>
-*{ 
-  text-transform: none !important; 
-} 
+  *{ 
+    text-transform: none !important; 
+  } 
+  table.v-table thead th {
+    font-size: 17px !important;
+  }
 </style>
