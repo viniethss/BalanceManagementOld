@@ -6,7 +6,9 @@ import router from './router'
 import firebase from 'firebase'
 import { firebaseConfig } from '@/firebaseConfig';
 
-firebase.initializeApp(firebaseConfig)
+let app = firebase.initializeApp(firebaseConfig)
+export const db = app.firestore();
+
 Vue.config.productionTip = false
 
 let vueApp = '';

@@ -1,11 +1,13 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify'
+import { firestorePlugin } from 'vuefire'
 import Router from 'vue-router'
 import 'vuetify/dist/vuetify.min.css'
 import firebase from 'firebase'
 
 Vue.use(Router)
 Vue.use(Vuetify)
+Vue.use(firestorePlugin)
 
 const router = new Router({
   mode: 'history',

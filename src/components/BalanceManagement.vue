@@ -25,19 +25,19 @@
                     <v-text-field v-model="editedItem.name" v-if="dialog" :autofocus="formTitle ==  'New Entry'"  label="Name" :rules="requiredRule" validate-on-blur></v-text-field>
                   </v-flex>
                   <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItem.vehicle_no" label="Vehicle No" ></v-text-field>
+                    <v-text-field v-model="editedItem.vehicle_no" label="Vehicle No"></v-text-field>
                   </v-flex>
                   <v-flex xs12 sm6 md4>
                     <v-text-field v-model="editedItem.reference" label="Reference" ></v-text-field>
                   </v-flex>
                   <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItem.amount" label="Amount" :rules="numberRule" validate-on-blur></v-text-field>
+                    <v-text-field v-model="editedItem.amount" type="number" label="Amount" prefix="₹" :rules="numberRule" validate-on-blur></v-text-field>
                   </v-flex>
                   <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItem.amount_recieved" v-if="dialog" :autofocus="formTitle ==  'Edit Entry'" label="Amount recieved"></v-text-field>
+                    <v-text-field v-model="editedItem.amount_recieved" type="number" prefix="₹" v-if="dialog" :autofocus="formTitle ==  'Edit Entry'" label="Amount recieved"></v-text-field>
                   </v-flex>
                   <v-flex xs12 sm6 md4>
-                    <v-text-field v-model="editedItem.amount_paid" label="Amount paid"></v-text-field>
+                    <v-text-field v-model="editedItem.amount_paid" type="number" prefix="₹" label="Amount paid"></v-text-field>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -86,118 +86,154 @@
 <script>
 import NavBar from '@/components/NavBar'
 import format from 'date-fns/format'
-  export default {
-    data: () => ({
-      dialog: false,
-      requiredRule: [
-        v => !!v || 'Field is required',
-      ],
-      numberRule: [
-        v => !!v || 'Field is required',
-        v => /^\d+$/.test(v) || 'Must be a number',
-      ],
-      dateRule: [
-        v => !!v || 'Field is required',
-        v => /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/.test(v) || 'Must be a valid date',
-      ],
-      headers: [
-        { text: 'Date', value: 'date', align: 'left', class: ""},
-        { text: 'Name', value: 'name', align: 'right', class: "" },
-        { text: 'Vehicle No', value: 'vehicle_no', align: 'right', class: "" },
-        { text: 'Reference', value: 'reference', align: 'right', class: "" },
-        { text: 'Amount', value: 'amount', align: 'right', class: "" },
-        { text: 'Amount recieved', value: 'amount_recieved', align: 'right', class: "" },
-        { text: 'Amount paid', value: 'amount_paid', align: 'right', class: "" },
-        { text: 'Balance', value: 'balance', align: 'right', class: "" },
-        { text: 'Advance', value: 'advance', align: 'right', class: "" },
-        { text: '', value: 'edit', sortable: false}
-      ],
-      record: [],
-      editedIndex: -1,
-      editedItem: {
-        date: format(new Date(), 'DD/MM/YYYY'),
-        name: '',
-        vehicle_no: '',
-        reference: '',
-        amount: '',
-        amount_recieved: '',
-        amount_paid: '',
-      },
-      defaultItem: {
-        date: format(new Date(), 'DD/MM/YYYY'),
-        name: '',
-        vehicle_no: '',
-        reference: '',
-        amount: '',
-        amount_recieved: '',
-        amount_paid: '',
-      }
-    }),
+import { db } from '../main'
+import uniqid from 'uniqid'
+import { textCase } from '../vue-directives'
 
-    computed: {
-      formTitle () {
-        return this.editedIndex === -1 ? 'New Entry' : 'Edit Entry'
-      }
+export default {
+  data: () => ({
+    pk: 'ddd',
+    dialog: false,
+    requiredRule: [
+      v => !!v || 'Field is required',
+    ],
+    numberRule: [
+      v => !!v || 'Field is required',
+      v => /^\d+$/.test(v) || 'Must be a number',
+    ],
+    dateRule: [
+      v => !!v || 'Field is required',
+      v => /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/.test(v) || 'Must be a valid date',
+    ],
+    headers: [
+      { text: 'Date', value: 'date', align: 'left', class: ""},
+      { text: 'Name', value: 'name', align: 'right', class: "" },
+      { text: 'Vehicle No', value: 'vehicle_no', align: 'right', class: "" },
+      { text: 'Reference', value: 'reference', align: 'right', class: "" },
+      { text: 'Amount', value: 'amount', align: 'right', class: "" },
+      { text: 'Amount recieved', value: 'amount_recieved', align: 'right', class: "" },
+      { text: 'Amount paid', value: 'amount_paid', align: 'right', class: "" },
+      { text: 'Balance', value: 'balance', align: 'right', class: "" },
+      { text: 'Advance', value: 'advance', align: 'right', class: "" },
+      { text: '', value: 'edit', sortable: false}
+    ],
+    record: [],
+    data: [],
+    editedIndex: -1,
+    editedItem: {
+      date: format(new Date(), 'DD/MM/YYYY'),
+      name: '',
+      vehicle_no: '',
+      reference: '',
+      amount: '',
+      amount_recieved: '',
+      amount_paid: '',
     },
-
-    watch: {
-      dialog (val) {
-        val || this.close()
-        this.$refs.entryForm.resetValidation()
-      }
-    },
-
-    created () {
-      this.initialize()
-    },
-
-    methods: {
-      initialize () {
-        this.record = [
-          {
-            date: '01/14/2019',
-            name: 'Vinieth',
-            vehicle_no: 'TN35A2040',
-            reference: 'Vinieth kpm',
-            amount: 1000,
-            amount_recieved: 10,
-            amount_paid: 100,
-            balance: 500,
-            advance: 844
-          }
-        ]
-      },
-
-      editItem (item) { 
-        this.editedIndex = this.record.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.editedItem.date = format(new Date(), 'DD/MM/YYYY')
-        this.dialog = true
-      },
-
-      close () {
-        this.dialog = false
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      },
-
-      save () {
-        if (this.$refs.entryForm.validate()){
-          if(this.editedIndex > -1) {
-            Object.assign(this.record[this.editedIndex], this.editedItem)
-          } 
-          else {
-            this.record.push(this.editedItem)
-          }
-          this.close()
-        } 
-      }
-    },
-    components: {
-        NavBar
+    defaultItem: {
+      date: format(new Date(), 'DD/MM/YYYY'),
+      name: '',
+      vehicle_no: '',
+      reference: '',
+      amount: '',
+      amount_recieved: '',
+      amount_paid: '',
     }
+  }),
 
+  computed: {
+    formTitle () {
+      return this.editedIndex === -1 ? 'New Entry' : 'Edit Entry'
+    }
+  },
+
+  watch: {
+    dialog (val) {
+      val || this.close()
+      this.$refs.entryForm.resetValidation()
+    },
+    'editedItem.vehicle_no' (val){
+      this.editedItem.vehicle_no = val.toUpperCase()
+    },
+    'editedItem.reference' (val){
+      this.editedItem.reference = this.camelize(val)
+    },
+    'editedItem.name' (val){
+      this.editedItem.name = this.camelize(val)
+    }
+  },
+
+  created () {
+    this.initialize()
+  },
+
+  methods: {
+    initialize () {
+      this.record = [
+        {
+          date: '01/14/2019',
+          name: 'Vinieth',
+          vehicle_no: 'TN35A2040',
+          reference: 'Vinieth kpm',
+          amount: 1000,
+          amount_recieved: 10,
+          amount_paid: 100,
+          balance: 500,
+          advance: 844
+        }
+      ]
+    },
+
+    camelize(str) {
+      return str.replace(/\w\S*/g, function(txt){
+          return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      });
+    },
+
+    editItem (item) { 
+      this.editedIndex = this.record.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.editedItem.date = format(new Date(), 'DD/MM/YYYY')
+      this.dialog = true
+    },
+
+    close () {
+      this.dialog = false
+      this.editedItem = Object.assign({}, this.defaultItem)
+      this.editedIndex = -1
+    },
+
+    save () {
+      if (this.$refs.entryForm.validate()){
+        if(this.editedIndex > -1) {
+          Object.assign(this.record[this.editedIndex], this.editedItem)
+        } 
+        else {
+          this.record.push(this.editedItem)
+        }
+        this.pk = uniqid()
+        db.collection('data').add({
+          pk: this.pk,
+          sec_id: this.pk + "_sec_id",
+          amount: this.editedItem.amount,
+          amount_paid: this.editedItem.amount_paid,
+          amount_recieved: this.editedItem.amount_recieved,
+          date: this.editedItem.date,
+          name: this.editedItem.name,
+          reference: this.editedItem.reference,
+          vehicle_no: this.editedItem.vehicle_no
+        })
+
+        this.close()
+      } 
+    }
+  },
+  components: {
+      NavBar
   }
+  //firebase: {
+   // record: this.record.push(db.collection('data').get())
+ // }
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
