@@ -22,6 +22,7 @@
           <v-btn color="primary" dark class="mb-2" v-on:click="refresh">HOME</v-btn>
           <v-btn color="primary" dark class="mb-2" v-on:click="balance">BALANCE</v-btn>
           <v-btn color="primary" dark class="mb-2" v-on:click="advance">ADVANCE</v-btn>
+          <v-btn color="primary" dark class="mb-2" v-on:click="cleared">CLEARED</v-btn>
           <v-btn color="primary"  class="mb-2" v-on="on" ><v-icon >add</v-icon> &nbsp; NEW  ENTRY</v-btn>
         </template>
         <v-card>
@@ -89,6 +90,7 @@
                   <td class="text-xs-right data-row-size">{{ props.item.amount_paid }}</td>
                   <td class="text-xs-right data-row-size">{{ props.item.balance }}</td>
                   <td class="text-xs-right data-row-size">{{ props.item.advance }}</td>
+                  <td class="text-xs-right data-row-size" style="display:none" >{{ props.item.pk }}</td>
                   <td class="justify-center layout px-0">
                   </td>
                 </template>
@@ -96,10 +98,13 @@
           </v-card>
       </v-dialog>
     </v-toolbar>
-    
     <br/>
-    <br/>
-
+    <v-chip class="ma-2" color="primary" text-color="white">
+      <v-icon>label_important</v-icon>&nbsp;&nbsp;<strong>BALANCE &nbsp;- {{ ttBal}}</strong>
+    </v-chip>
+    <v-chip class="ma-2" color="primary"  text-color="white">
+      <v-icon>label_important</v-icon>&nbsp;&nbsp;<strong>ADVANCE  &nbsp;- {{ ttAdv}}</strong>
+    </v-chip>
     <v-divider></v-divider>
 
     <v-data-table
@@ -118,6 +123,7 @@
         <td class="text-xs-right data-row-size">{{ props.item.amount_paid }}</td>
         <td class="text-xs-right data-row-size">{{ props.item.balance }}</td>
         <td class="text-xs-right data-row-size">{{ props.item.advance }}</td>
+        <td class="text-xs-right data-row-size" style="display:none" >{{ props.item.pk }}</td>
         <td class="justify-center layout px-0">
           <v-icon small class="mr-2" @click="editItem(props.item)" v-if="currentUser!='ks82628@gmail.com'">edit</v-icon>
           <v-icon small class="mr-2" @click="viewAudit(props.item)">visibility</v-icon>
@@ -143,6 +149,8 @@ export default {
     auditDialog: false,
     search: '',
     currentUser: '',
+    ttBal: 0,
+    ttAdv: 0,
     requiredRule: [
       v => !!v || 'Field is required',
     ],
@@ -155,27 +163,27 @@ export default {
       v => /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/.test(v) || 'Must be a valid date',
     ],
     headers: [
-      { text: 'Date', value: 'date', align: 'left', class: ""},
-      { text: 'Name', value: 'name', align: 'right', class: "" },
-      { text: 'Vehicle No', value: 'vehicle_no', align: 'right', class: "" },
-      { text: 'Reference', value: 'reference', align: 'right', class: "" },
-      { text: 'Amount', value: 'amount', align: 'right', class: "" },
-      { text: 'Amount recieved', value: 'amount_recieved', align: 'right', class: "" },
-      { text: 'Amount paid', value: 'amount_paid', align: 'right', class: "" },
-      { text: 'Balance', value: 'balance', align: 'right', class: "" },
-      { text: 'Advance', value: 'advance', align: 'right', class: "" },
-      { text: '', value: 'edit', sortable: false}
+      { text: 'Date', value: 'date', align: 'left', class: "", width: "1%"},
+      { text: 'Name', value: 'name', align: 'right', class: "", width: "1%"},
+      { text: 'Vh.No', value: 'vehicle_no', align: 'right', class: "", width: "1%" },
+      { text: 'Ref', value: 'reference', align: 'right', class: "", width: "1%" },
+      { text: 'Amnt', value: 'amount', align: 'right', class: "", width: "1%" },
+      { text: 'Amnt rcv.d', value: 'amount_recieved', align: 'right', class: "", width: "1%" },
+      { text: 'Amnt paid', value: 'amount_paid', align: 'right', class: "", width: "1%" },
+      { text: 'Bal', value: 'balance', align: 'right', class: "", width: "1%" },
+      { text: 'Adv', value: 'advance', align: 'right', class: "", width: "1%" },
+      { text: '', value: 'edit', sortable: false, width: "1%"}
     ],
     historyHeaders: [
       { text: 'Date', value: 'date', align: 'left', class: "", sortable: false},
       { text: 'Name', value: 'name', align: 'right', class: "" , sortable: false},
-      { text: 'Vehicle No', value: 'vehicle_no', align: 'right', class: "" , sortable: false},
-      { text: 'Reference', value: 'reference', align: 'right', class: "", sortable: false },
-      { text: 'Amount', value: 'amount', align: 'right', class: "", sortable: false },
-      { text: 'Amount recieved', value: 'amount_recieved', align: 'right', class: "", sortable: false },
-      { text: 'Amount paid', value: 'amount_paid', align: 'right', class: "", sortable: false },
-      { text: 'Balance', value: 'balance', align: 'right', class: "", sortable: false },
-      { text: 'Advance', value: 'advance', align: 'right', class: "", sortable: false },
+      { text: 'Vh.No', value: 'vehicle_no', align: 'right', class: "" , sortable: false},
+      { text: 'Ref', value: 'reference', align: 'right', class: "", sortable: false },
+      { text: 'Amt', value: 'amount', align: 'right', class: "", sortable: false },
+      { text: 'Amnt rcv.d', value: 'amount_recieved', align: 'right', class: "", sortable: false },
+      { text: 'Amt paid', value: 'amount_paid', align: 'right', class: "", sortable: false },
+      { text: 'Bal', value: 'balance', align: 'right', class: "", sortable: false },
+      { text: 'Adv', value: 'advance', align: 'right', class: "", sortable: false },
     ],
     record: [],
     auditRecord: [],
@@ -368,6 +376,13 @@ export default {
             results.push(doc.data())
           })
           this.record=results;
+          var bal = 0, adv = 0;
+          this.record.forEach(function(item){ 
+            bal = bal + item.balance;
+            adv = adv + item.advance;
+          }); 
+          this.ttBal = bal;
+          this.ttAdv = adv;
         })
       }
       else if(this.view === 'balance'){
@@ -388,6 +403,15 @@ export default {
           this.record=results;
         })
       }
+      else if(this.view === 'cleared'){
+        db.collection('data').where("balance","==",0).where("advance","==",0).get().then(querySnapShot => {
+          let results = [];
+          querySnapShot.forEach(doc=>{
+            results.push(doc.data())
+          })
+          this.record=results;
+        })
+      }
     },
 
     balance(){
@@ -397,6 +421,11 @@ export default {
 
     advance(){
       this.view = 'advance'
+      this.fetchResults()
+    },
+
+    cleared(){
+      this.view = 'cleared'
       this.fetchResults()
     },
 
